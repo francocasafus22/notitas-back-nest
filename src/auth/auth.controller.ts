@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signIn.auth.dto';
 import { Public } from 'src/decorators/public.decorator';
+import { GetUser } from 'src/decorators/get-user.decorator';
+import { PayloadDto } from './dto/payload-auth.dto';
 
 
 @Controller('auth')
@@ -17,8 +19,12 @@ export class AuthController {
   }
 
   @Get("profile")
-  getProfile(@Req() req){
-    return req.user
+  getProfile(@GetUser() user: PayloadDto){
+    return user
   }
 
+  @Get("me")
+  getUserData(@GetUser() user: PayloadDto){
+    return this.authService.getPersonalData(user)
+  }
 }

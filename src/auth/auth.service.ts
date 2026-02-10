@@ -6,6 +6,7 @@ import { SignInDto } from './dto/signIn.auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import {compare} from "bcrypt"
 import { envs } from 'src/config/envs';
+import { PayloadDto } from './dto/payload-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -36,5 +37,9 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload)
     }
     
+  }
+
+  async getPersonalData(user: PayloadDto){
+    return this.userService.findOne(user.userId)
   }
 }

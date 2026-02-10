@@ -31,7 +31,7 @@ export class UserService {
   }
 
   async findOne(id: string){
-    const userExist = await this.userModel.findById(id)
+    const userExist = await this.userModel.findById(id).select("-password").exec()
     if(!userExist) throw new NotFoundException("User not found")
     return userExist
   }
