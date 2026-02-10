@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { Connection, connection } from 'mongoose';
 import { envs } from './config/envs';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [MongooseModule.forRootAsync({useFactory: () => ({
@@ -14,7 +15,7 @@ import { envs } from './config/envs';
       return connection
     }
     
-  }) }), UserModule],
+  }) }), UserModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
