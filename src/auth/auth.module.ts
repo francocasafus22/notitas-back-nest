@@ -23,7 +23,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     global: true,
     useFactory: () => ({
       secret: envs.jwt_secret,
-      signOptions: { expiresIn: '15m' },
+      signOptions: { expiresIn: '1d' },
     }),
   }),
     MongooseModule.forFeature([{name: User.name, schema: UserSchema}])
