@@ -6,6 +6,8 @@ import { UserModule } from './user/user.module';
 import { Connection, connection } from 'mongoose';
 import { envs } from './config/envs';
 import { AuthModule } from './auth/auth.module';
+import { PostModule } from './post/post.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [MongooseModule.forRootAsync({useFactory: () => ({
@@ -15,7 +17,7 @@ import { AuthModule } from './auth/auth.module';
       return connection
     }
     
-  }) }), UserModule, AuthModule],
+  }) }), UserModule, AuthModule, PostModule, CommentModule],
   controllers: [AppController],
   providers: [AppService],
 })

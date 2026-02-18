@@ -7,19 +7,22 @@ import { envs } from 'src/config/envs';
 import { PayloadDto } from './dto/payload-auth.dto';
 import * as bcrypt from "bcrypt"
 import { RegisterDto } from './dto/register-auth.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from 'src/user/schemas/user.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class AuthService {
 
-  constructor(
-    private userService: UserService,
+  constructor(        
+    @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService
   ){}
 
   async register(registerDto: RegisterDto){
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
     try {
-      await this.userService.create({...registerDto, password: hashedPassword})
+      await this.userModel.create({...registerDto, password: hashedPassword})
       return{
         message: "User created succcessfully"
       }
@@ -33,7 +36,7 @@ export class AuthService {
   }
 
   async validateUser(username: string, pass:string): Promise<any>{
-    const user = await this.userService.findOneByUsername(username);
+    const user = await this.userModel.findOne({username});
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -56,6 +59,6 @@ export class AuthService {
   }
 
   async getPersonalData(user: PayloadDto){
-    return this.userService.findOne(user.userId)
+    return this.userModel.findOne({id: user.userId})
   }
 }
