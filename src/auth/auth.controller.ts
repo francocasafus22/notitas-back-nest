@@ -16,7 +16,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Public()
   @Post("login")
-  async reate(@Body() signInDto: SignInDto, @Res({passthrough: true}) response: Response) {
+  async create(@Body() signInDto: SignInDto, @Res({passthrough: true}) response: Response) {
     const {access_token} = await this.authService.signIn(signInDto)
     response.cookie("access_token", access_token, {
       httpOnly: true,
@@ -30,6 +30,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post("register")
   register(@Body() registerDto: RegisterDto){
     return this.authService.register(registerDto)
@@ -43,5 +44,13 @@ export class AuthController {
   @Get("me")
   getUserData(@GetUser() user: PayloadDto){
     return this.authService.getPersonalData(user)
+  }
+
+  @Post("logout")
+  logout(@Res({passthrough: true}) response: Response){
+    response.clearCookie("access_token")
+    return{
+      message: "Logout successful"
+    }
   }
 }

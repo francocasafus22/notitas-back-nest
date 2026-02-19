@@ -11,7 +11,7 @@ export class Post {
     @Prop({type: String, required: true})
     title: string;
 
-    @Prop({type: String, required: true, unique: true})
+    @Prop({type: String})
     slug: string;
 
     @Prop({type: String, required: true})
@@ -50,7 +50,7 @@ export const PostSchema = SchemaFactory.createForClass(Post);
 PostSchema.index({slug: 1}, {unique: true});
 
 // Pre save hook to generate slug from title
-PostSchema.pre("save", async function(next: Function) {
+PostSchema.pre("save", async function() {
     if(this.isModified("title") || !this.slug){
         const baseSlug = slugify(this.title, {lower: true, strict: true});
         let slug = baseSlug;
@@ -62,5 +62,4 @@ PostSchema.pre("save", async function(next: Function) {
         }
         this.slug = slug;
     }
-    next();
 })

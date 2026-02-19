@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dto/signIn.auth.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -10,6 +10,7 @@ import { RegisterDto } from './dto/register-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/user/schemas/user.schema';
 import { Model } from 'mongoose';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -59,6 +60,7 @@ export class AuthService {
   }
 
   async getPersonalData(user: PayloadDto){
-    return this.userModel.findOne({id: user.userId})
+    const userData = await this.userModel.findById(user.userId).select("-password").exec();
+    return userData
   }
 }
