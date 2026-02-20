@@ -36,7 +36,7 @@ export class Post {
     status: string;
 
     @Prop({type: Types.ObjectId, required: true, ref: "User"})
-    author: Types.ObjectId | User;
+    author: Types.ObjectId;
 
     @Prop({
         type: [{type: Types.ObjectId, ref: "User"}],

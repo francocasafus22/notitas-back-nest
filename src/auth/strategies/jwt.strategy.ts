@@ -7,6 +7,7 @@ import { PayloadDto } from "../dto/payload-auth.dto";
 import type { Request } from "express";
 import { UserService } from "src/user/user.service";
 import { NotFoundError } from "rxjs";
+import { UserDocument } from "src/user/schemas/user.schema";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy){
@@ -25,11 +26,11 @@ export class JwtStrategy extends PassportStrategy(Strategy){
     }
 
     async validate(payload: any): Promise<PayloadDto>{
-        const userExist = await this.userService.findOne({id: payload.sub});
+        const userExist: UserDocument | null = await this.userService.findOne({id: payload.sub});
         if(!userExist) throw new UnauthorizedException("User no longer exists");
         return{
-            userId: payload.sub,
-            username: payload.username
+            userId: userExist._id,
+            username: userExist.username
         }
     }
 }

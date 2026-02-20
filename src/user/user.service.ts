@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, type UserDocument } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {hash} from "bcrypt"
 import { RegisterDto } from 'src/auth/dto/register-auth.dto';
 import { GetUser } from 'src/decorators/get-user.decorator';
@@ -25,8 +25,8 @@ export class UserService {
     return this.userModel.find().exec()
   }
 
-  async getBasicInfo(userId: string){
-    const user = await this.userModel.findById(userId).select("username image").lean().exec()
+  async getBasicInfo(userId: Types.ObjectId){
+    const user = await this.userModel.findById(userId).select("username image").lean().exec()    
     if(!user) throw new NotFoundException("User not found")
     return user
   }

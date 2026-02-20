@@ -1,4 +1,6 @@
+import { Types } from "mongoose"
+
 export class PayloadDto {    
-    userId: string
+    userId: Types.ObjectId
     username: string
 }

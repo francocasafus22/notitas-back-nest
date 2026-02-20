@@ -8,7 +8,7 @@ import { PayloadDto } from './dto/payload-auth.dto';
 import * as bcrypt from "bcrypt"
 import { RegisterDto } from './dto/register-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from 'src/user/schemas/user.schema';
+import { User, UserDocument } from 'src/user/schemas/user.schema';
 import { Model } from 'mongoose';
 import { NotFoundError } from 'rxjs';
 
@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   async validateUser(username: string, pass:string): Promise<any>{
-    const user = await this.userModel.findOne({username});
+    const user: UserDocument | null = await this.userModel.findOne({username});
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   async signIn(signInDto: SignInDto): Promise<{access_token: string}>{
-    const user = await this.validateUser(signInDto.username, signInDto.password);
+    const user: UserDocument = await this.validateUser(signInDto.username, signInDto.password);
     const payload = {sub: user._id, username: user.username};
     return{
       access_token: await this.jwtService.signAsync(payload)
