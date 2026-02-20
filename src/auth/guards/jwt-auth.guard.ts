@@ -1,7 +1,8 @@
-import { ExecutionContext, Injectable } from "@nestjs/common";
+import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard } from "@nestjs/passport";
 import { Observable } from "rxjs";
+import { IS_OPTIONAL_AUTH_KEY } from "src/decorators/optional-auth.decorator";
 import { IS_PUBLIC_KEY } from "src/decorators/public.decorator";
 
 @Injectable()
@@ -16,10 +17,30 @@ export class JwtAuthGuard extends AuthGuard("jwt"){
             [context.getHandler(), context.getClass()]
         )
 
+    
         if(isPublic){
             return true
         }
+    
 
         return super.canActivate(context)
+    }
+
+    handleRequest(err, user, info, context) {
+        const isOptionalAuth = this.reflector.getAllAndOverride<boolean>(
+        IS_OPTIONAL_AUTH_KEY,
+        [context.getHandler(), context.getClass()]
+        );
+
+        if (isOptionalAuth) {
+        // Si es opcional → nunca tiramos error
+        return user ?? undefined;
+        }
+
+        if (err || !user) {
+        throw err || new UnauthorizedException();
+        }
+
+        return user;
     }
 }

@@ -48,6 +48,7 @@ export class Post {
 export const PostSchema = SchemaFactory.createForClass(Post);
 
 PostSchema.index({slug: 1}, {unique: true});
+PostSchema.index({ createdAt: -1 });
 
 // Pre save hook to generate slug from title
 PostSchema.pre("save", async function() {

@@ -7,6 +7,8 @@ import { PayloadDto } from 'src/auth/dto/payload-auth.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ParseMongoIdPipe } from 'src/common';
 import { Types } from 'mongoose';
+import { Public } from 'src/decorators/public.decorator';
+import { OptionalAuth } from 'src/decorators/optional-auth.decorator';
 
 @Controller('post')
 export class PostController {
@@ -17,19 +19,23 @@ export class PostController {
     return this.postService.create(createPostDto, user);
   }
 
+  @OptionalAuth()
   @Get()
-  findAll(@Query() query: PaginationDto) {
-    return this.postService.findAll(query);
+  findAll(@Query() query: PaginationDto, @GetUser() user?: PayloadDto) {
+    console.log("user in controller findAll", user);
+    return this.postService.findAll(query, user);
   }
 
+  @OptionalAuth()
   @Get("/user/:username")
-  findAllByUsername(@Param("username") username: string, @Query() query: PaginationDto) {
-    return this.postService.findAllByUsername(username, query);
+  findAllByUsername(@Param("username") username: string, @Query() query: PaginationDto, @GetUser() user?: PayloadDto){ 
+    return this.postService.findAllByUsername(username, query, user);
   }
 
+  @OptionalAuth()
   @Get(':slug')
-  findOne(@Param('slug') slug: string) {
-    return this.postService.findOne(slug);
+  findOne(@Param('slug') slug: string, @GetUser() user?: PayloadDto) {
+    return this.postService.findOne(slug, user);
   }
 
   @Patch(':id')
@@ -40,5 +46,15 @@ export class PostController {
   @Delete(':id')
   remove(@Param('id', ParseMongoIdPipe) id: Types.ObjectId, @GetUser() user: PayloadDto) {
     return this.postService.remove(id, user);
+  }
+
+  @Post("/like/:postId")
+  likePost(@Param('postId', ParseMongoIdPipe) postId: Types.ObjectId, @GetUser() user: PayloadDto){
+    return this.postService.likePost(postId, user);
+  }
+
+  @Delete("/like/:postId")
+  unlikePost(@Param('postId', ParseMongoIdPipe) postId: Types.ObjectId, @GetUser() user: PayloadDto){
+    return this.postService.unlikePost(postId, user);
   }
 }
