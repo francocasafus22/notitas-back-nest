@@ -8,6 +8,7 @@ import { UserService } from 'src/user/user.service';
 import { PayloadDto } from 'src/auth/dto/payload-auth.dto';
 import { NotFoundError } from 'rxjs';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import slugify from 'slugify';
 
 @Injectable()
 export class PostService {
@@ -48,14 +49,18 @@ export class PostService {
     return post;
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async update(id: Types.ObjectId, updatePostDto: UpdatePostDto, user: PayloadDto) {
+    const post = await this.postModel.findById(id).exec();
+    if(!post) throw new NotFoundException("Post not found");       
+    if(!post.author.equals(user.userId)) throw new ForbiddenException("You are not allowed to update this post");
+    Object.assign(post, updatePostDto);
+    const postUpdated = await post.save();
+    return {message: "Post updated successfully", post: postUpdated};
   }
 
   async remove(id: Types.ObjectId, user: PayloadDto) {
     const post: PostDocument | null = await this.postModel.findById(id).exec();
     if(!post) throw new NotFoundException("Post not found");
-    console.log("Post author:", post.author, "User ID:", user.userId);
     if(!post.author.equals(user.userId)) throw new ForbiddenException("You are not allowed to delete this post");
     await post.deleteOne();
     return {message: "Post deleted"};

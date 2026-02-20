@@ -33,8 +33,8 @@ export class PostController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(+id, updatePostDto);
+  update(@Param('id', ParseMongoIdPipe) id: Types.ObjectId, @Body() updatePostDto: UpdatePostDto, @GetUser() user:PayloadDto) {
+    return this.postService.update(id, updatePostDto, user);
   }
 
   @Delete(':id')

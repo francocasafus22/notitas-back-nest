@@ -1,14 +1,16 @@
-import { IsEnum, isMongoId, IsMongoId, IsOptional, IsString } from "class-validator";
+import { IsEnum, isMongoId, IsMongoId, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { Types } from "mongoose";
 
 export class CreatePostDto {
     @IsString()
+    @IsNotEmpty()
     title: string;
 
     @IsString()
+    @IsNotEmpty()
     body: string;
     
-    @IsString()
+    @IsString()    
     description: string;
     
     @IsString({ each: true })
