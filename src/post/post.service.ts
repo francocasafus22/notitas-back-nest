@@ -19,7 +19,6 @@ export class PostService {
   ){}
 
   private formatPosts(posts: any[], user?: PayloadDto) {
-    console.log("user in formatPosts", user);
       return posts.map(post => {        
         return {
           ...post,
@@ -54,7 +53,7 @@ export class PostService {
   }
 
   async findAll(query: PaginationDto, user?: PayloadDto | undefined) {
-    console.log("user in findAll", user);
+  
     const [posts, total] = await Promise.all([
       this.postModel.find()
       .sort({createdAt: -1})
@@ -75,10 +74,7 @@ export class PostService {
     return this.formatPosts([post], user)[0];
   }
 
-  async update(id: Types.ObjectId, updatePostDto: UpdatePostDto, user: PayloadDto) {
-    const post = await this.postModel.findById(id).exec();
-    if(!post) throw new NotFoundException("Post not found");       
-    if(!post.author.equals(user.userId)) throw new ForbiddenException("You are not allowed to update this post");
+  async update(post: PostDocument, updatePostDto: UpdatePostDto) {
     Object.assign(post, updatePostDto);
     const postUpdated = await post.save();
     return {message: "Post updated successfully", post: postUpdated};
@@ -109,8 +105,5 @@ export class PostService {
 
   }
 
-  async unlikePost(postId: Types.ObjectId, user: PayloadDto){
-
-  }
 
 }

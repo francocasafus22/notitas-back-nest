@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -9,6 +9,10 @@ import { ParseMongoIdPipe } from 'src/common';
 import { Types } from 'mongoose';
 import { Public } from 'src/decorators/public.decorator';
 import { OptionalAuth } from 'src/decorators/optional-auth.decorator';
+import { ParsePostPipe } from './pipes/parse-post.pipe';
+import type { PostDocument } from './schemas/post.schema';
+import { PostOwnerGuard } from './guards/post-owner.guard';
+import { GetPost } from './decorators/get-post.decorator';
 
 @Controller('post')
 export class PostController {
@@ -22,7 +26,6 @@ export class PostController {
   @OptionalAuth()
   @Get()
   findAll(@Query() query: PaginationDto, @GetUser() user?: PayloadDto) {
-    console.log("user in controller findAll", user);
     return this.postService.findAll(query, user);
   }
 
@@ -38,9 +41,10 @@ export class PostController {
     return this.postService.findOne(slug, user);
   }
 
+  @UseGuards(PostOwnerGuard)
   @Patch(':id')
-  update(@Param('id', ParseMongoIdPipe) id: Types.ObjectId, @Body() updatePostDto: UpdatePostDto, @GetUser() user:PayloadDto) {
-    return this.postService.update(id, updatePostDto, user);
+  update(@GetPost() post: PostDocument, @Body() updatePostDto: UpdatePostDto) {
+    return this.postService.update(post, updatePostDto);
   }
 
   @Delete(':id')
@@ -51,10 +55,5 @@ export class PostController {
   @Post("/like/:postId")
   likePost(@Param('postId', ParseMongoIdPipe) postId: Types.ObjectId, @GetUser() user: PayloadDto){
     return this.postService.likePost(postId, user);
-  }
-
-  @Delete("/like/:postId")
-  unlikePost(@Param('postId', ParseMongoIdPipe) postId: Types.ObjectId, @GetUser() user: PayloadDto){
-    return this.postService.unlikePost(postId, user);
   }
 }

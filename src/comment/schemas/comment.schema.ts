@@ -11,7 +11,7 @@ export class Comment {
     body: string;
 
     @Prop({type: Types.ObjectId, required: true, ref: "User"})
-    authorId: Types.ObjectId | User;
+    author: Types.ObjectId | User;
 
     @Prop({type: String, required: true})
     authorName: string;
