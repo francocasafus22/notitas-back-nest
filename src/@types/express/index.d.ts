@@ -6,7 +6,7 @@ declare global {
         interface User extends PayloadDto{}
         interface Request{
             user?: PayloadDto;
-            post?: PostDocument;
+            resource? 
         }
     }
 }

@@ -88,21 +88,33 @@ export class PostService {
     return {message: "Post deleted"};
   }
 
-  async likePost(postId: Types.ObjectId, user: PayloadDto){    
-    const post: PostDocument | null = await this.postModel.findById(postId).exec();    
+  async likePost(post: PostDocument, user: PayloadDto){    
+  
+    const updatedPost = await this.postModel.findByIdAndUpdate(
+      post._id, [
+        {
+          $set: {
+            likes: {
+              $cond: [
+                {$in: [user.userId, "$likes"]},
+                {$setDifference: ["$likes", [user.userId]]},
+                {$concatArrays: ["$likes", [user.userId]]}
+              ]
+            }
+          }
+        },        
+      ],
+      {new: true, lean:true, updatePipeline: true}
+    )
 
-    if(!post) throw new NotFoundException("Post not found");
-
-    const alreadyLikes = post.likes.some(id=>id.equals(user.userId));
-
-    const updatedPost = await this.postModel.findByIdAndUpdate(postId, alreadyLikes ? 
-      { $pull: { likes: user.userId } } :
-      { $addToSet: { likes: user.userId } },
-      { new: true }
-    ).exec();    
-
-    return {message: "Post liked", updatedPost};
-
+    const formatPost = this.formatPosts([updatedPost], user)[0];
+    
+    return {
+      message: "Like updated successfully",
+      post: {
+        ...formatPost,
+      }
+    }
   }
 
 

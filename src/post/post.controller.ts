@@ -11,8 +11,9 @@ import { Public } from 'src/decorators/public.decorator';
 import { OptionalAuth } from 'src/decorators/optional-auth.decorator';
 import { ParsePostPipe } from './pipes/parse-post.pipe';
 import type { PostDocument } from './schemas/post.schema';
-import { PostOwnerGuard } from './guards/post-owner.guard';
 import { GetPost } from './decorators/get-post.decorator';
+import { OwnershipGuard } from 'src/common/guards/ownership.guard';
+import { Post as PostSchema } from './schemas/post.schema';
 
 @Controller('post')
 export class PostController {
@@ -41,19 +42,20 @@ export class PostController {
     return this.postService.findOne(slug, user);
   }
 
-  @UseGuards(PostOwnerGuard)
+  @UseGuards(OwnershipGuard(PostSchema.name))
   @Patch(':id')
   update(@GetPost() post: PostDocument, @Body() updatePostDto: UpdatePostDto) {
     return this.postService.update(post, updatePostDto);
   }
 
+  @UseGuards(OwnershipGuard(PostSchema.name))
   @Delete(':id')
-  remove(@Param('id', ParseMongoIdPipe) id: Types.ObjectId, @GetUser() user: PayloadDto) {
+  remove(@GetPost() post: PostDocument, id: Types.ObjectId, @GetUser() user: PayloadDto) {
     return this.postService.remove(id, user);
   }
 
   @Post("/like/:postId")
-  likePost(@Param('postId', ParseMongoIdPipe) postId: Types.ObjectId, @GetUser() user: PayloadDto){
-    return this.postService.likePost(postId, user);
+  likePost(@Param('postId', ParsePostPipe) post: PostDocument, @GetUser() user: PayloadDto){
+    return this.postService.likePost(post, user);
   }
 }
