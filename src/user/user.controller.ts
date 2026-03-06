@@ -6,6 +6,8 @@ import { Public } from 'src/decorators/public.decorator';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { User } from './schemas/user.schema';
 import { PayloadDto } from 'src/auth/dto/payload-auth.dto';
+import { ParseMongoIdPipe } from 'src/common';
+import { Types } from 'mongoose';
 
 @Controller('user')
 export class UserController {
@@ -25,7 +27,7 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseMongoIdPipe) id: Types.ObjectId) {
     return this.userService.findOne({id});
   }
 
@@ -35,7 +37,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseMongoIdPipe) id: Types.ObjectId) {
     return this.userService.remove(id);
   }
 }

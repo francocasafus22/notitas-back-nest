@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -68,8 +68,10 @@ export class PostService {
     return {posts: this.formatPosts(posts, user), total, currentPage: query.page, totalPages: Math.ceil(total / query.limit)};
   }
 
-  async findOne(slug: string, user?: PayloadDto | undefined) {
-    const post: Post | null = await this.postModel.findOne({slug}).lean().exec();
+  async findOne({slug, user, id} : { slug?: string, user?: PayloadDto | undefined, id?: Types.ObjectId }) {
+    if(!slug && !id) throw new BadRequestException("You must provide a slug or id");
+    const query = slug ? { slug } : { _id: id };
+    const post: Post | null = await this.postModel.findOne(query).lean().exec();
     if(!post) throw new NotFoundException("Post not found");
     return this.formatPosts([post], user)[0];
   }

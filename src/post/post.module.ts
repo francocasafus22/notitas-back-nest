@@ -11,5 +11,6 @@ import { UserService } from 'src/user/user.service';
   imports: [MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), UserModule],
   controllers: [PostController],
   providers: [PostService],
+  exports: [PostService]
 })
 export class PostModule {}

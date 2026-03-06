@@ -39,7 +39,7 @@ export class PostController {
   @OptionalAuth()
   @Get(':slug')
   findOne(@Param('slug') slug: string, @GetUser() user?: PayloadDto) {
-    return this.postService.findOne(slug, user);
+    return this.postService.findOne({slug, user});
   }
 
   @UseGuards(OwnershipGuard(PostSchema.name))

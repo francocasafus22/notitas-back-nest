@@ -31,7 +31,7 @@ export class UserService {
     return user
   }
 
-  async findOne({id, username} : { id?: string, username?: string }): Promise<UserDocument>{
+  async findOne({id, username} : { id?: Types.ObjectId, username?: string }): Promise<UserDocument>{
     if(!id && !username) throw new BadRequestException("You must provide an id or username")
     const query = id ? { _id: id } : {username: username}
     const userExist = await this.userModel.findOne(query).select("-password").exec()
@@ -45,7 +45,7 @@ export class UserService {
     return {message: "User updated successfully", user: {...updatedUser.toJSON(), password: undefined}};
   }
 
-  async remove(id: string){
+  async remove(id: Types.ObjectId){
     const user = await this.findOne({id})
     await user.deleteOne()
     return {message: "User deleted successfully"};
