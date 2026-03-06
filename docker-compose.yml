@@ -1,0 +1,30 @@
+services:
+  app:
+    build: ./
+    ports: 
+      - 3000:3000
+    volumes:
+      - ./src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=${PORT}
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - FRONT_URL=${FRONT_URL}
+
+  mongo:
+    container_name: notitas_database
+    image: mongo
+    ports:
+      - 27017:27017
+    restart: always
+    volumes:
+      - ./mongo-data:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
