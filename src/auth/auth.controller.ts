@@ -18,11 +18,12 @@ export class AuthController {
   @Post("login")
   async create(@Body() signInDto: SignInDto, @Res({passthrough: true}) response: Response) {
     const {access_token} = await this.authService.signIn(signInDto)
-    response.cookie("access_token", access_token, {
+    response.cookie("NOTITAS_TOKEN", access_token, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24
+      maxAge: 1000 * 60 * 60 * 24,
+      path: "/"
     })
 
     return{
