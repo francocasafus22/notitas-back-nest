@@ -49,7 +49,7 @@ export class AuthController {
 
   @Post("logout")
   logout(@Res({passthrough: true}) response: Response){
-    response.clearCookie("access_token")
+    response.clearCookie("NOTITAS_TOKEN")
     return{
       message: "Logout successful"
     }

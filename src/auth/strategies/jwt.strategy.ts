@@ -13,11 +13,11 @@ import { UserDocument } from "src/user/schemas/user.schema";
 export class JwtStrategy extends PassportStrategy(Strategy){
     constructor(
         private userService: UserService
-    ){
+    ){        
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([
                 (request: Request) => {
-                    return request?.cookies?.access_token
+                    return request?.cookies?.NOTITAS_TOKEN
                 }
             ]),
             ignoreExpiration: false,
