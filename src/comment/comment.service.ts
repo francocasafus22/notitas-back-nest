@@ -31,7 +31,7 @@ export class CommentService {
   }
 
   async findAllByPost(postId: Types.ObjectId, user?: PayloadDto) {
-    const comments = await this.commentModel.find({post: postId}).lean().exec();
+    const comments = await this.commentModel.find({post: postId}).sort({createdAt: -1}).lean().exec();
     return comments.map(comments=>comments.author._id.equals(user?.userId) ? {...comments, isAuthor: true} : {...comments, isAuthor: false});
     
   }
