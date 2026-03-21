@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, Types } from "mongoose";
+import slugify from "slugify";
 
 export type UserDocument = HydratedDocument<User>
 
@@ -32,6 +33,21 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)
+
+UserSchema.pre("save", async function() {
+    if(!this.username) return
+    if(this.isModified("username") || !this.username){
+        const baseSlug = slugify(this.username, {lower: true, strict: true});
+        let slug = baseSlug;
+        let counter = 1;
+
+        const UserModel = this.constructor as any;
+        while(await UserModel.findOne({username: slug, _id: {$ne: this._id}})){
+            slug = `${baseSlug}-${counter++}`;
+        }
+        this.username = slug;
+    }
+})
 
 UserSchema.index({ username: 1 }, { unique: true });
 UserSchema.index({ email: 1 }, { unique: true });

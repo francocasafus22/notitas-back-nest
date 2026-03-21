@@ -8,6 +8,7 @@ import {hash} from "bcrypt"
 import { RegisterDto } from 'src/auth/dto/register-auth.dto';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { PayloadDto } from 'src/auth/dto/payload-auth.dto';
+import slugify from 'slugify';
 
 @Injectable()
 export class UserService {
@@ -40,9 +41,12 @@ export class UserService {
   }
 
   async update(updateUserDto: UpdateUserDto, user: PayloadDto) {
-    const updatedUser = await this.userModel.findOneAndUpdate({ _id: user.userId }, updateUserDto, {new: true}).exec()  
-    if(!updatedUser) throw new NotFoundException("User not found")
-    return {message: "User updated successfully", user: {...updatedUser.toJSON(), password: undefined}};
+    const userExist = await this.userModel.findOne({_id: user.userId}).select("-password").exec()
+    if(!userExist) throw new NotFoundException("User not found")
+    
+    Object.assign(userExist, updateUserDto)
+    await userExist.save()
+    return {message: "User updated successfully", username: userExist.username};
   }
 
   async remove(id: Types.ObjectId){

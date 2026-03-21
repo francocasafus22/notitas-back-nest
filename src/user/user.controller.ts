@@ -8,6 +8,7 @@ import { User } from './schemas/user.schema';
 import { PayloadDto } from 'src/auth/dto/payload-auth.dto';
 import { ParseMongoIdPipe } from 'src/common';
 import { Types } from 'mongoose';
+import { OptionalAuth } from 'src/decorators/optional-auth.decorator';
 
 @Controller('user')
 export class UserController {
@@ -19,10 +20,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @OptionalAuth()
   @Get('/profile/:username')
-  async findOneByUsername(@Param('username') username: string, @GetUser() user: User) {
+  async findOneByUsername(@Param('username') username: string, @GetUser() user?: User) {
     const userFound = await this.userService.findOne({username});
-    const isOwner = userFound.username === user.username;
+    const isOwner = userFound.username === user?.username;
     return {user: userFound, isOwner};
   }
 
