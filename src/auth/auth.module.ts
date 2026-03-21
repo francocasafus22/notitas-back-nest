@@ -33,11 +33,8 @@ import { LoggerMiddleware } from 'src/common/middleware/logger.middleware';
   providers: [AuthService, JwtStrategy,{provide: APP_GUARD, useClass: JwtAuthGuard}],
   exports: [AuthService]
 })
-export class AuthModule implements NestModule{
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes("*")
-  }
-}
+export class AuthModule {}
+
 
 
 

@@ -4,7 +4,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post } from 'src/post/schemas/post.schema';
-import { Comment } from './schemas/comment.schema';
+import { Comment, CommentDocument } from './schemas/comment.schema';
 import { PayloadDto } from 'src/auth/dto/payload-auth.dto';
 import { UserService } from 'src/user/user.service';
 import { PostService } from 'src/post/post.service';
@@ -44,7 +44,10 @@ export class CommentService {
     return `This action updates a #${id} comment`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  async remove(comment: CommentDocument, user: PayloadDto) {
+
+    await comment.deleteOne();
+
+    return {message: "Comment deleted successfully"};
   }
 }

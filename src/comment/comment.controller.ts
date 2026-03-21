@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -7,6 +7,10 @@ import { Types } from 'mongoose';
 import { ParseMongoIdPipe } from 'src/common';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { PayloadDto } from 'src/auth/dto/payload-auth.dto';
+import { OwnershipGuard } from 'src/common/guards/ownership.guard';
+import { Comment } from './schemas/comment.schema';
+import type { CommentDocument } from './schemas/comment.schema';
+import { GetComment } from './decorators/get-comment.decorator';
 
 @Controller('comment')
 export class CommentController {
@@ -28,8 +32,9 @@ export class CommentController {
     return this.commentService.update(+id, updateCommentDto);
   }
 
+  @UseGuards(OwnershipGuard(Comment.name))
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentService.remove(+id);
+  remove(@GetComment() comment: CommentDocument,@GetUser() user: PayloadDto) {
+    return this.commentService.remove(comment, user);
   }
 }
