@@ -34,8 +34,7 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User)
 
-UserSchema.pre("save", async function() {
-    if(!this.username) return
+UserSchema.pre("save", async function() {    
     if(this.isModified("username") || !this.username){
         const baseSlug = slugify(this.username, {lower: true, strict: true});
         let slug = baseSlug;

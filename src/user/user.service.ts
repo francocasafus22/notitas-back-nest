@@ -41,7 +41,7 @@ export class UserService {
   }
 
   async update(updateUserDto: UpdateUserDto, user: PayloadDto) {
-    const userExist = await this.userModel.findOne({_id: user.userId}).select("-password").exec()
+    const userExist = await this.userModel.findOne({_id: user.userId}).exec()
     if(!userExist) throw new NotFoundException("User not found")
     
     Object.assign(userExist, updateUserDto)
