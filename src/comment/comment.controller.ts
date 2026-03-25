@@ -8,8 +8,7 @@ import { ParseMongoIdPipe } from 'src/common';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { PayloadDto } from 'src/auth/dto/payload-auth.dto';
 import { OwnershipGuard } from 'src/common/guards/ownership.guard';
-import { Comment } from './schemas/comment.schema';
-import type { CommentDocument } from './schemas/comment.schema';
+import { Comment, type CommentDocument } from './schemas/comment.schema';
 import { GetComment } from './decorators/get-comment.decorator';
 
 @Controller('comment')

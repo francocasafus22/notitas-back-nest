@@ -22,13 +22,13 @@ export function OwnershipGuard(modelName: string) {
             if(!Types.ObjectId.isValid(id)){
                 throw new NotFoundException("Invalid id");
             }
-
+            
             const resource = await this.model.findById(id).exec();
-
-            if(!resource) throw new NotFoundException(`${this.model.name} not found`);
+            
+            if(!resource) throw new NotFoundException(`${modelName} not found`);
 
             if(!resource.author.equals(user?.userId)){
-                throw new ForbiddenException(`You are not allowed to update this ${this.model.name}`);
+                throw new ForbiddenException(`You are not allowed to update this ${modelName}`);
             }
 
             request.resource = resource
